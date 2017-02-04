@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.hippoedit.com/xml/package-info">
+<package-info xmlns="http://www.hippoedit.com/xml/package-info" xmlns:smf="http://www.hippoedit.com/">
+	<id>8C4A5657-1E91-447A-8C53-11D29E32FDE1</id>
+	<name>Scripting Tools</name>	
+	<version>1.0.0.7</version>
+	<description>Various HippoEDIT scripting utilities</description>
+	<author>HippoEDIT.com</author>
+	<email>supportbox@hippoedit.com</email>
+	<homepage>http://wiki.hippoedit.com/plugins/scripting_tools</homepage>
+	<memo></memo>
+
+	<!-- Common Install actions -->
+	<install>
+		<!-- Read me -->
+		<readme type="inline">This will install Scripting Tools plugin for HippoEDIT.</readme>
+
+		<require-file name="he_ui_tools.hejs" destination="%{plugins}%/he_ui_tools.hejs" />
+
+		<!-- Registration -->
+		<install-plugin path="%{plugins}%/he_ui_tools.hejs"/>
+	</install>
+
+	<!-- Uninstall actions -->
+	<uninstall>
+		<!-- Read me -->
+		<readme type="inline">This will uninstall Scripting Tools plugin for HippoEDIT.</readme>
+
+		<!-- Un-Registration -->
+		<uninstall-plugin id="8C4A5657-1E91-447A-8C53-11D29E32FDE1"/>
+
+		<!-- Source files -->
+		<remove-file name="%{plugins}%/he_ui_tools.hejs" />
+	</uninstall>
+
+</package-info>

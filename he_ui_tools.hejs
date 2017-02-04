@@ -1,0 +1,573 @@
+#include "he_utils.js" // generic helper functions
+
+AddScriptInfo("8C4A5657-1E91-447A-8C53-11D29E32FDE1", "Scripting Tools", "1.0.0.7", "Various HippoEDIT scripting utilities", "HippoEDIT", "supportbox@hippoedit.com", "http://wiki.hippoedit.com/plugins/scripting_tools");
+
+//${ region Icons }
+var nIconInsertImage = Application.RegisterImageString(
+'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABC1BMVEUAAABFfQAAAABVibhOjgVVibhO\
+ jgAAAAAAAABFfgD///9LgrP1/v9KgrVKgbZLjACS1/96pCh/zP+r4f+d2/9QhbWi3f+t5v+PuUCfzXaL\
+ 0f9NhLXs/f+FnxGQuXeHpSen3/+OqiiY2f9LgrdOhMeBpjE+gwCe0wBkoQCQyQBBhgCYzACL1v+Xrh7O\
+ 53WFz/+DvABbmQCGuwDTxYr/vyePytSTv5SV1/+OqzB9nBmHpi1/oCOXwqGgz3pGiQBwr0Z0snei1oOU\
+ ZhZCiACTQh2QvUPU7nOUwUyXsCiMwABOilGNwQDG4Hfsu1WItTCZy2x0oBv4//+NuD16yf//yibpy115\
+ y///yyuWvngQ4DsQAAAACnRSTlMAqzD+o/uXMx6vkCMX3gAAAMlJREFUGNNFzUV2wzAUQNFfdr6jSq1s\
+ xxRm5jKGmWn/K4nsOCdveCcPblRCiHxKvQMAy2/btv/UUhVAcLPf7p6d1ii70GjUy2bz0DTLHkzrBcaK\
+ gyIzXZCxwF5joehbNMQ8iCmKFgx/hIMKxl1QNC3y8v6Z/OKYcCHCOQ/wVuAvlfq5dWBuGMb3f+c3k+6l\
+ M/fiMlvput7tt/NZzOapgMWTUzJXQsQSBQu9csMKVsYUVIs8iuKJUbU2qVV9cP1w7opS6pPgkiRQgiMH\
+ bBl88CVZNwAAAABJRU5ErkJggg==');
+
+var nIconCreateGUID = Application.RegisterImageString(
+'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEUAAABXV1daWlqwr6////+ysrKw\
+ sLC1tbWmpqYAAADl5udUVFTz9PRjY2NRUVDm6On7/P1hYWGCgoJ5eXmcnJxtbWxqampvb2/6/0CtAAAA\
+ CnRSTlMz/////////sYjfW5UHwAAAHVJREFUGNN1j4EKgzAMRGOWRF2nLla3//9TrxHFIr6Da3jQ0lCr\
+ dkFbUqlQMnkH01RaDGL8JIQZNUKoNF9G3FGNaBHCyDCgnkQo9xi0PCqpKMaxC4ApSCHm/wrhS14PsTj+\
+ kvP8w22DqLD7Lp3a68S0o54q+g2A2AYnYTLxnQAAAABJRU5ErkJggg==');
+
+var nIconFinder = Application.RegisterImageString(
+'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAeFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAA\
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVyEiIAAAAJ3RSTlMAC6FdAkGG\
+ qvG7ag8hkyeZTufAZMv7U571SdwGGXhxtTPRGFZ76uNS4Dk0AAAAnklEQVQY002ORxLDQAgER3lXaZVz\
+ dJr//9BYlsruEwNUA04mx8If7kx22S+PAVXrBx4ubLIaiiW6csMvXX8Kcl44R8Mj86QMQ7smNwh+fXcR\
+ c79ZDw6uNIJStlLSfOxy21pDgEIhMwaI/UQqcxitmgqeylhiXNoGaKmJnqZiMolr0/RzQmwVydeuSN1Q\
+ AfHKkzl9Jsf7cWhrbZwIqcQ3bL4QLZc7MYQAAAAASUVORK5CYII=');
+
+var nIconNewPlugin = Application.RegisterImageString(
+'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABHVBMVEUAAADPhj3EfTsAAAAAAAB2TSTP\
+ hjwAAABDfQAAAADPgjzSiEHIgT7EejLRiUGycC5SjQFMjgDPhj/NgjnOgz3/////zET/yT3/0Ur/6XzY\
+ mFbanE6EvABKjAD/vCb/8sE1gwDam1n/y1TZl0jZmVLYl03/wjSWsz//8rv/wC3/uh7/xzc4hgCc0wD/\
+ +Nr/76b/9sH/5GtamwDkrlz/9Yz/9nxMjAD/2lb/77H/wzb/8rP/22j/1mHUjUb//bT8yoPbhEX/+YST\
+ ygA8igD/6byPyADL5nX847PvxpDjmU763a/T7nWJwACJkB9WmABlowCQyQD/zkX/8LmNwQDO53eZzQDG\
+ 4Hf/8Xn/757/9rbirWj/5nb/7pP/8oPOhD6pVG+9AAAAE3RSTlMAs9cnLQH9M64e3OHp5wOso5f4Eu7w\
+ BwAAAM9JREFUGNNNzdV2wlAQheGhLesk9TY5TXvihrvXHXfXvP9jMCxYwHc3/1xsQNceY54fDvxCIiHA\
+ sZtq/Wp/+BzTZJU/ZjLfNgipfki3LF1PCbswK1kRTdMioV04ceelcOA5EH7xzt8vMJwSJxmVJCn6lvz8\
+ +IINZyo9oNegEfu9Bbh3s8veIwpm4o145w7E3KL4hNLGzz/tjlQQV8W0K8vZnFGmlA4x5Cd5kRD7O9ZU\
+ qDIogGfL9iWu11ptZaxkOCDobLNOOFUtcDwc8PjiYQ20XRvnGyQKPwAAAABJRU5ErkJggg==');
+
+var nIconNewTool = Application.RegisterImageString(
+'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABDlBMVEUAAAB+gIJvcXJ1d3mIioxVjACJ\
+ i40AAAAAAAAAAAB3eHtGR0hpa22Bg4VrbW9pamw4OTp6fH8AAAAAAABfnwBNhgCHiYt8foG3ubvY2duP\
+ kZOBg4XOz9KKjI7////g4uSMjpCHiYuwsrPCxcbExsi6vL6Rk5Vtb3FxdHZRmQBdnQBengCXmJq/wMOs\
+ rq+cnqCanJ6goqTIyczU1dioqqzR0dWWlKLc2OtTmwBurwCc0wCPyADM5XWCuwBppgCGugCMwADn5+mz\
+ s7fKzM7b3d+0trh3eXvAwMXJx9TU1th+o0aKsVPJxtfY0+WWywDi3vDr6/CJhZl/fI3T7XOYzABrjjpv\
+ a35YngDE33dzb4JLNSg1AAAAR3RSTlMAv7D+tq6zMyMcnD3I+sXFTiIHL5SY/v//////////////////\
+ /////////////////////////////////////////////gYNH3sAAADjSURBVBjTPY7XbsJAEEUHhLEN\
+ UXq03uJ12RjbGIjpvaSRXun//yPsConzMNI9I81cOODaLhzJ5QG8e0+O/CH7NUorVoXSmp9TIlPHwsHV\
+ piNwPaOEgVrCUogWMkCBcGARl/gBRipSVGJVkj3PkhdWQlTuHSxu7eJlkbx+dn/+pZinjQYpXBQ6H3Hc\
+ WwHoesQeA2J33vuDxaB/DQDRA2Pt9lfve8iHyzLAPH16xm/NbjzinI+kOL1Lw9Bz/jazMR/PElns5OxK\
+ D3/XN5PpdjrRVFVD3ol2ppaUE80EhfqlgymHCXuTLBzmJuFe9gAAAABJRU5ErkJggg==');
+
+var nImageWizard = Application.RegisterImageString(
+'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');
+
+//${ endregion }
+
+function readStorage(key, def_val) {
+	var vStorage = GetStorage(eStorageTypeWorkspace, "", eAccessTypeReadWrite);
+	if (vStorage != undefined) {
+		var val1 = vStorage.read(key);
+		if (val1 != undefined) return val1;
+	}
+	return def_val;
+}
+
+function serializeIcon(file_name, lb) {
+	var data = read_file(file_name, true);
+	var vEncoded = btoa(data);
+
+	var vFormatted = "";
+	var nStart = 0;
+	while (nStart < vEncoded.length) {
+		var nEnd = Math.min(nStart + 80, vEncoded.length);
+		if (vFormatted == "") vFormatted += "'";
+		else vFormatted += " ";
+		vFormatted += vEncoded.slice(nStart, nEnd);
+		if (nEnd == vEncoded.length) vFormatted += "'";
+		else vFormatted += "\\" + lb;
+		nStart = nEnd;
+	}
+	return vFormatted;
+}
+
+var vInsertImage = new Command("Scripting.InsertIconString", "Insert Image String...", "Opens image file and encodes it as base64", nIconInsertImage);
+vInsertImage.onExecute = function() {
+	var files = ax2js(SelectFiles(true, "", "", 0, "Image Files (*.png;*.ico;*.gif;*.jpg)|*.png;*.ico;*.gif;*.jpg|All Files (*.*)|*.*||", ""));
+	for (i = 0; i < files.length; i++) {
+		var vFormatted = serializeIcon(files[i], ActiveDocument.LineBreak);
+		ActiveDocument.ReplaceText(ActiveView.Selection, vFormatted, AddUndoActionType("Insert BASE64 Encoded image"));
+	}
+}
+vInsertImage.onEnabled = function() {
+	return ActiveDocument != null && ActiveDocument.ReadOnly != true && (ActiveDocument.Syntax.ID == 'hejs' || ActiveDocument.Syntax.ID == 'hevbs');
+}
+
+var vInsertGUID = new Command("Scripting.InsertGUID", "Insert new UUID...", "Generates new UUID and insert it into code", nIconCreateGUID);
+vInsertGUID.onExecute = function() {
+	ActiveView.Position = ActiveDocument.ReplaceText(ActiveView.Selection, uuid_generate(), AddUndoActionType("Insert GUID"));
+}
+vInsertGUID.onEnabled = function() {
+	return ActiveDocument != null && ActiveDocument.ReadOnly != true;
+}
+
+var vIconFinder = new Command("Scripting.IconFinder", "IconFinder...", "Search for suitable icon on IconFinder.com...", nIconFinder);
+vIconFinder.onExecute = function() {
+	var sel = ActiveView.Selection;
+
+	// if there is no selection, take current word range as selection
+	if (sel.IsEmpty) sel = ActiveView.CurrentWord;
+
+	var textToSearch = ActiveDocument.GetText(sel);
+
+	var url = "http://www.iconfinder.com/search/";
+	if (textToSearch != "") url += "?q=iconset%3Afatcow+" + escape(textToSearch);
+	else url += "?q=iconset:fatcow";
+
+	OpenURL(url);
+}
+
+var vGenerateObjectList = new Command("Scripting.ObjectList", "Generate Object List...", "Outputs actual object/method API list ...");
+vGenerateObjectList.onExecute = function() {
+	var output = Application.Output();
+	output.clear(); // clean output from old text
+	output.writeln("HippoEDIT version: " + Application.Version);
+	output.writeln("");
+	
+	var reservedNames = {
+		"AddRef":               true,
+		"GetMemberName":        true,
+		"GetMemberProperties":  true,
+		"GetNameSpaceParent":   true,
+		"GetNextDispID":        true,
+		"GetTypeInfo":          true,
+		"GetTypeInfoCount":     true,
+		"Invoke":               true,
+		"GetIDsOfNames":        true,
+		"DeleteMemberByName":   true,
+		"DeleteMemberByDispID": true,
+		"GetDispID":            true,
+		"QueryInterface":       true,
+		"Release":              true,
+		"RemoteInvokeEx":       true
+	};
+
+	function objectEnumerate(givenObject) {
+		var properties = [];
+		for (var x in givenObject) {
+			if ( !(x in reservedNames) )
+				properties.push(x);
+		}
+		properties.sort();
+		return properties;
+	}
+	
+	function dumpObject(name, givenObject) {
+		var newLine = "\r\n";
+		if ( givenObject != null ) {
+			output.writeln(newLine + name + newLine + "  " + objectEnumerate(givenObject).join(newLine + "  "));
+		}
+	}
+	
+	dumpObject("Application", Application);
+	dumpObject("WScript", WScript);
+	dumpObject("Settings", Settings);
+	dumpObject("Document", ActiveDocument);
+	dumpObject("View", ActiveView);
+	dumpObject("Syntax", ActiveDocument.Syntax);
+}
+
+function onNewToolScript() {
+	var oScriptDoc = NewFile("", "", "hejs");
+	oScriptDoc.appendln('#include "he_utils.js"	// generic helper functions');
+	oScriptDoc.appendln('');
+	oScriptDoc.appendln('var output = Application.Output();');
+	oScriptDoc.appendln('output.clear(); // clean output from old text');
+	oScriptDoc.appendln('');
+	oScriptDoc.appendln('output.writeln("HippoEDIT version: " + Application.Version);');
+	oScriptDoc.appendln('output.writeln("HippoEDIT path: " + Application.Path);');
+	oScriptDoc.appendln('output.writeln("Script Name: " + Application.ScriptName);');
+	oScriptDoc.appendln('var aAruments = ax2js(Application.ScriptArguments);');
+	oScriptDoc.appendln('for (var i = 0; i < aAruments.length; i++) {');
+	oScriptDoc.appendln('	output.writeln("Argument " + i + ": " + aAruments[i]);');
+	oScriptDoc.appendln('}');
+	oScriptDoc.appendln('');
+	oScriptDoc.appendln('alert("Hello World");');
+}
+
+function onNewServiceScript() {
+	var oStorage      = new Storage();
+	oStorage.guid     = uuid_generate();
+	oStorage.version  = "1.0";
+	oStorage.author   = readStorage("author", ExpandTemplate("%USERNAME%"));
+	oStorage.email    = readStorage("email", "");
+	oStorage.homepage = readStorage("homepage", "");
+
+	var pages = new Array();
+	pages[0] = '@<dialog title="Scripting Plug-in Wizard : General" resizing="horizontal" id="scripting.plugin.wizzard" > \
+	   <group> \
+		   <image id="' + nImageWizard + '" align="left"/> \
+		   <paragraph text="Fill here basic information about your plug-in. It can be shown\nin Options dialog or on HippoEDIT web site for example"/> \
+	   </group> \
+	   <groupbox title="Plug-in Information"> \
+			<group> \
+				<paragraph text="UUID:" minwidth="10" style="required" align="left"/> \
+			   	<edit id="guid" cuebanner="Enter here plug-in GUID" minwidth="40" style="readonly" required="true"/> \
+			</group> \
+			<group> \
+				<paragraph text="Name:" minwidth="10" style="required" align="left"/> \
+			   	<edit id="name" cuebanner="Enter here plug-in Name" minwidth="30" required="true"/> \
+			</group> \
+			<group> \
+				<paragraph text="Description:" minwidth="10" align="left"/> \
+			   	<edit id="description" cuebanner="Enter here plug-in Description" minwidth="30"/> \
+			</group> \
+			<group> \
+				<paragraph text="Version:" minwidth="10" align="left"/> \
+			   	<edit id="version"/> \
+			</group> \
+			<group> \
+				<paragraph text="Author:" minwidth="10" align="left"/> \
+			   	<edit id="author"/> \
+			</group> \
+			<group> \
+				<paragraph text="Email:" minwidth="10" align="left"/> \
+			   	<edit id="email"/> \
+			</group> \
+			<group> \
+				<paragraph text="Homepage:" minwidth="10" align="left"/> \
+			   	<edit id="homepage" autocomplete="url"/> \
+			</group> \
+	   </groupbox/> \
+	   <group uniform="true" align="right|bottom"> \
+		   <button title="&amp;Next" returnval="next" positive="true" default="true"/> \
+		   <button title="&amp;Cancel" returnval="cancel"/> \
+	   </group> \
+	</dialog>';
+
+	pages[1] = '@<dialog title="Scripting Plug-in Wizard : Commands" resizing="horizontal" id="scripting.plugin.wizzard" > \
+	    <group> \
+	        <image id="' + nImageWizard + '" align="left"/> \
+	        <paragraph text="If you want to integrate new function in existing UI, normally you\nneed to create a command."/> \
+	    </group> \
+	    <groupbox title="Command Definition"> \
+		    <group> \
+		 	   <paragraph text="Name:" minwidth="10" align="left"/> \
+		 	   <edit id="command_name" cuebanner="something like &quot;MyCommand&quot;" minwidth="40"/> \
+		    </group> \
+		    <group> \
+		 	   <paragraph text="Title:" minwidth="10" align="left"/> \
+		 	   <edit id="command_title" cuebanner="what you see in menu" minwidth="40"/> \
+		    </group> \
+		    <group> \
+		 	   <paragraph text="Prompt:" minwidth="10" align="left"/> \
+		 	   <edit id="command_prompt" cuebanner="what you see in status bar" minwidth="40"/> \
+		    </group> \
+		    <group> \
+		 	   <paragraph text="Icon:" minwidth="10" align="left"/> \
+		 	   <edit id="command_icon" cuebanner="path to icon to be embedded" autocomplete="file" minwidth="40"/> \
+		 	   <file_browser filter="Image Files (*.png;*.ico;*.gif;*.jpg)|*.png;*.ico;*.gif;*.jpg|All Files (*.*)|*.*||" align="right"/> \
+		    </group> \
+	    </groupbox/> \
+		<groupbox title="Command Integration"> \
+			<checkbox title="Register in command list" checked="true" id="commandRegister"/> \
+			<checkbox title="Create toolbar" checked="false" id="commandAddToToolbar"/> \
+			<checkbox title="Add to main menu" checked="false" id="commandAddToMainMenu"/> \
+			<columnbreak/> \
+			<checkbox title="Add to context menu" checked="false" id="commandAddToContextMenu"/> \
+			<checkbox title="Add as status indicator" checked="false" id="commandAddToStatus"/> \
+		</groupbox/> \
+	    <group uniform="true" align="right|bottom"> \
+		    <button title="&amp;Previous" returnval="previous"/> \
+		    <button title="&amp;Next" returnval="next" positive="true" default="true"/> \
+		    <button title="&amp;Cancel" returnval="cancel"/> \
+	    </group> \
+	</dialog>';
+
+	pages[2] = '@<dialog title="Scripting Plug-in Wizard : UI Events" resizing="horizontal" id="scripting.plugin.wizzard" > \
+		<group> \
+			<image id="' + nImageWizard + '" align="left"/> \
+			<paragraph text="Here are some extra UI events you can use, select check that for\nwhich you want to have default handlers be generated"/> \
+		</group> \
+		<groupbox title="General UI Events"> \
+			<checkbox title="onMainSubmenuUpdate" checked="false" id="onMainSubmenuUpdate"/> \
+			<checkbox title="onMenuCreate" checked="false" id="onMenuCreate"/> \
+			<checkbox title="onPopupCreate" checked="false" id="onPopupCreate"/> \
+			<checkbox title="onUICreate" checked="false" id="onUICreate"/> \
+		</groupbox/> \
+		<groupbox title="List Events"> \
+			<checkbox title="onListInitContextMenu" checked="false" id="onListContextMenu"/> \
+			<checkbox title="onListDoubleClick" checked="false" id="onListDoubleClick"/> \
+			<checkbox title="onListCheck" checked="false" id="onListCheck"/> \
+		</groupbox/> \
+		<group uniform="true" align="right|bottom"> \
+			<button title="&amp;Previous" returnval="previous"/> \
+			<button title="&amp;Next" returnval="next" positive="true" default="true"/> \
+			<button title="&amp;Cancel" returnval="cancel"/> \
+		</group> \
+	</dialog>';
+
+	for (i = 0; i < pages.length;) {
+		var result = dialog(pages[i], oStorage);
+		if (result == "next") i++;
+		else if (result == "previous") i--;
+		else break;
+	}
+
+	if (result != "cancel") {
+		var vStorage = GetStorage(eStorageTypeWorkspace, "", eAccessTypeWrite);
+
+		vStorage.author = oStorage.author;
+		vStorage.email = oStorage.email;
+		vStorage.homepage = oStorage.homepage;
+
+		// create plug-in script
+		var pluginFileName = oStorage.name + ".hejs";
+		pluginFileName = pluginFileName.toLowerCase();
+		var oPluginDoc = NewFile(pluginFileName);
+		var lb = oPluginDoc.LineBreak;
+
+		oPluginDoc.appendln('Application.AddScriptInfo("' + oStorage.guid + '"' + ', "' + oStorage.name + '"' + ', "' + oStorage.version + '"' + ', "' + oStorage.description + '"' + ', "' + oStorage.author + '"' + ', "' + oStorage.email + '"' + ', "' + oStorage.homepage + '"' + ');' + lb);
+
+		// create plug-in bundle description
+		var oPackageDoc = NewFile("package-info.xml", "", "xml");
+		oPackageDoc.appendln('<?xml version="1.0"?>');
+		oPackageDoc.appendln('<!DOCTYPE package-info SYSTEM "http://www.hippoedit.com/xml/package-info">');
+		oPackageDoc.appendln('<package-info xmlns="http://www.hippoedit.com/xml/package-info" xmlns:smf="http://www.hippoedit.com/">');
+
+		oPackageDoc.appendln('	<id>' + oStorage.guid + '</id>');
+		oPackageDoc.appendln('	<name>' + oStorage.name + '</name>');
+		oPackageDoc.appendln('	<version>' + oStorage.version + '</version>');
+		oPackageDoc.appendln('	<description>' + oStorage.description + '</description>');
+		oPackageDoc.appendln('	<author>' + oStorage.author + '</author>');
+		oPackageDoc.appendln('	<email>' + oStorage.email + '</email>');
+		oPackageDoc.appendln('	<homepage>' + oStorage.homepage + '</homepage>');
+		oPackageDoc.appendln('	<memo></memo>');
+
+		oPackageDoc.appendln('	<install>');
+		oPackageDoc.appendln('		<readme type="inline">This will install ' + oStorage.name + ' plugin for HippoEDIT.</readme>');
+		oPackageDoc.appendln('		<require-file name="' + pluginFileName + '" destination="%{plugins}%/' + pluginFileName + '" />');
+		oPackageDoc.appendln('		<install-plugin path="%{plugins}%/' + pluginFileName + '"/>');
+		oPackageDoc.appendln('	</install>');
+
+		oPackageDoc.appendln('	<uninstall>');
+		oPackageDoc.appendln('		<readme type="inline">This will uninstall ' + oStorage.name + ' plugin for HippoEDIT.</readme>');
+		oPackageDoc.appendln('		<uninstall-plugin id="' + oStorage.guid + '"/>');
+		oPackageDoc.appendln('		<remove-file name="%{plugins}%/' + pluginFileName + '" />');
+		oPackageDoc.appendln('	</uninstall>');
+
+		oPackageDoc.appendln('</package-info>');
+
+		// add command
+		if (oStorage.command_name != "") {
+			var commandIcon = "-1";
+			if (oStorage.command_icon != "") {
+				var vIconStream = serializeIcon(oStorage.command_icon, lb);
+				if (vIconStream != "") {
+					oPluginDoc.appendln("//${ region Icons }");
+					oPluginDoc.appendln("var nIcon = Application.RegisterImageString(" + lb + vIconStream + ");");
+					oPluginDoc.appendln("//${ endregion }" + lb);
+					commandIcon = "nIcon";
+				}
+			}
+
+			oPluginDoc.appendln("var vCommand = new Command(\"" + oStorage.name + "." + oStorage.command_name + "\", \"" + oStorage.command_title + "\", \"" + oStorage.command_prompt + "\", " + commandIcon + ");");
+			oPluginDoc.appendln("vCommand.onExecute = function() {" + lb + "	alert(this.Name + \" clicked!\");" + lb + "}" + lb);
+
+			if (oStorage.commandRegister) oPluginDoc.appendln("Application.RegisterCommand(vCommand);" + lb);
+
+			// we can only add toolbar button, if we have an icon
+			if (oStorage.commandAddToToolbar && commandIcon != "-1") {
+				oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+				oPluginDoc.appendln("// Initialize Toolbar");
+				oPluginDoc.appendln("Application.onInitToolbars = function (){");
+				oPluginDoc.appendln("	var MyToolbar = this.GetToolBar(\"" + oStorage.name + "\", true);");
+				oPluginDoc.appendln("	MyToolbar.Name = \"" + oStorage.name + "\";");
+				oPluginDoc.appendln("	MyToolbar.AddButton(vCommand);");
+				oPluginDoc.appendln("}" + lb);
+			}
+
+			// extend main menu by our handlers
+			if (oStorage.commandAddToMainMenu) {
+				oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+				oPluginDoc.appendln("// Update main menu with our items");
+				oPluginDoc.appendln("Application.onInitMainMenu = function (bUpdate){");
+				oPluginDoc.appendln("	if ( !bUpdate ) {");
+				oPluginDoc.appendln("		var vMenu = this.InsertSubMenu(this.ItemCount - 2, \"" + oStorage.name + "\");");
+				oPluginDoc.appendln("		if ( vMenu != null ) {");
+				oPluginDoc.appendln("		   vMenu.AddItem(\"\", vCommand);");
+				oPluginDoc.appendln("		}");
+				oPluginDoc.appendln("	}");
+				oPluginDoc.appendln("}" + lb);
+			}
+
+			// extend document context menu by our handlers
+			if (oStorage.commandAddToContextMenu) {
+				oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+				oPluginDoc.appendln("// Extend context menu with our items");
+				oPluginDoc.appendln("Application.onInitContextMenu = function (eStyle, view, nLine, nPos){");
+				oPluginDoc.appendln("	if ( view && eStyle == eCMSNormal ) {");
+				oPluginDoc.appendln("		// add context menu item at \"predefined\" place");
+				oPluginDoc.appendln("		this.AddItem(\"My Command\", vCommand);");
+				oPluginDoc.appendln("	}");
+				oPluginDoc.appendln("}" + lb);
+			}
+
+			// extend status bar by our indicators
+			if (oStorage.commandAddToStatus) {
+				oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+				oPluginDoc.appendln("// Extend status bar by our indicators");
+				oPluginDoc.appendln("Application.onInitStatusBar = function (){");
+				oPluginDoc.appendln("	this.AddIndicator(vCommand, 50);");
+				oPluginDoc.appendln("}" + lb);
+			}
+		}
+
+		////////////////////////////////////////////////////////////////////////
+		// generate default UI event handlers if needed
+
+		if (oStorage.onMainSubmenuUpdate) {
+			oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+			oPluginDoc.appendln("// Called each time before main menu submenu to be shown");
+			oPluginDoc.appendln("Application.onMainSubmenuUpdate = function (){");
+			oPluginDoc.appendln("	Output().writeln(\"onMainSubmenuUpdate : \" + this.ItemCount);");
+			oPluginDoc.appendln("}" + lb);
+		}
+
+		if (oStorage.onMenuCreate) {
+			oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+			oPluginDoc.appendln("// Called on creating of drop down menu triggered from toolbar or statusbar");
+			oPluginDoc.appendln("Application.onMenuCreate = function (command){");
+			oPluginDoc.appendln("	Output().writeln(\"onMenuCreate : command = \" + command);");
+			oPluginDoc.appendln("}" + lb);
+		}
+
+		if (oStorage.onPopupCreate) {
+			oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+			oPluginDoc.appendln("// Called on creating of popup window triggered from toolbar or statusbar");
+			oPluginDoc.appendln("Application.onPopupCreate = function (command){");
+			oPluginDoc.appendln("	Output().writeln(\"onPopupCreate : command = \" + command);");
+			oPluginDoc.appendln("}" + lb);
+		}
+
+		if (oStorage.onUICreate) {	
+			oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+			oPluginDoc.appendln("// Called after initializing of the UI, now you can open list pane or ");
+			oPluginDoc.appendln("// output pane, if needed");
+			oPluginDoc.appendln("Application.onUICreate = function (){");
+			oPluginDoc.appendln("	Output().writeln(\"onUICreate\");");
+			oPluginDoc.appendln("}" + lb);
+		}
+
+		////////////////////////////////////////////////////////////////////////
+		// generate default Lit Pane handlers if needed
+		
+		//<checkbox title="onListContextMenu" checked="false" id="onListContextMenu"/>
+		//<checkbox title="onListDoubleClick" checked="false" id="onListDoubleClick"/>
+		//<checkbox title="onListCheck" checked="false" id="onListCheck"/>
+
+		if (oStorage.onListInitContextMenu) {
+			oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+			oPluginDoc.appendln("// Called before showing list pane context menu");
+			oPluginDoc.appendln("Application.onListInitContextMenu = function (pane, item){");
+			oPluginDoc.appendln("	Output().writeln(\"onListInitContextMenu : item_count = \" + this.ItemCount + \", item col1 text = \" + item.Item(1));");
+			oPluginDoc.appendln("	if (pane == Application.List(\"My List Pane\", false)) {");
+			oPluginDoc.appendln("	// add your items here, as:");
+			oPluginDoc.appendln("	// this.AddItem(\"\", vCommand);");
+			oPluginDoc.appendln("	return true;");
+			oPluginDoc.appendln("	}");
+			oPluginDoc.appendln("	return false;");
+			oPluginDoc.appendln("}" + lb);
+		}
+
+		if (oStorage.onListDoubleClick) {
+			oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+			oPluginDoc.appendln("// Called after double click on item in any list pane");
+			oPluginDoc.appendln("Application.onListDoubleClick = function (item){");
+			oPluginDoc.appendln("	Output().writeln(\"onListDoubleClick : pane name = \" + this.Name + \", item col1 text = \" + item.Item(1));");
+			oPluginDoc.appendln("}" + lb);
+		}
+
+		if (oStorage.onListDoubleClick) {
+			oPluginDoc.appendln("////////////////////////////////////////////////////////////////////////");
+			oPluginDoc.appendln("// Called after click on check box in any list pane");
+			oPluginDoc.appendln("Application.onListCheck = function (item){");
+			oPluginDoc.appendln("	Output().writeln(\"onListCheck : pane name = \" + this.Name + \", item col1 text = \" + item.Item(1));");
+			oPluginDoc.appendln("}" + lb);
+		}
+
+	}
+
+}
+
+var vNewToolScript = new Command("Scripting.NewTool", "New Tool Script", "Calls wizard for creating of new tool script", nIconNewTool , onNewToolScript);
+var vNewPlugin = new Command("Scripting.NewService", "New Service Script", "Calls wizard for creating of new service script", nIconNewPlugin, onNewServiceScript);
+
+////////////////////////////////////////////////////////////////////////
+// Main Menu handlers
+Application.onInitMainMenu = function(bUpdate) {
+	if (bUpdate == false) {
+		var vMenu = this.InsertSubMenu(this.ItemCount - 2, "Scripting");
+		if (vMenu != null) {
+			vMenu.AddItem("", vInsertImage);
+			vMenu.AddItem("", vInsertGUID);
+			vMenu.AddItem("");
+			vMenu.AddItem("", vGenerateObjectList);
+			vMenu.AddItem("");
+			vMenu.AddItem("", vIconFinder);
+			vMenu.AddItem("");
+			var oWizards = vMenu.AddSubMenu("Wizards");
+			oWizards.AddItem("", vNewToolScript);
+			oWizards.AddItem("", vNewPlugin);
+		}
+	}
+}
+
+// register commands as global, to be able assign shortcuts to it
+Application.RegisterCommand(vInsertImage);
+Application.RegisterCommand(vInsertGUID);
+Application.RegisterCommand(vIconFinder);
+
+////////////////////////////////////////////////////////////////////////
+// Initialize Scripting Tools Toolbar
+Application.onInitToolbars = function() {
+	var MyToolbar = this.GetToolBar("Scripting Tools", true);
+	MyToolbar.Name = "Scripting Tools";
+	MyToolbar.AddButton(vInsertImage);
+	MyToolbar.AddButton(vInsertGUID);
+	MyToolbar.AddButton();
+	MyToolbar.AddButton(vIconFinder);
+	MyToolbar.AddButton();
+	MyToolbar.AddButton(vNewToolScript);
+	MyToolbar.AddButton(vNewPlugin);
+}
